@@ -8,20 +8,26 @@
   var NetInfo = function() {
     var self = this;
     Pusher.EventsDispatcher.call(this);
-
-    window.addEventListener("online", function() {
-      self.emit('online', null);
-    });
-    window.addEventListener("offline", function() {
-      self.emit('offline', null);
-    });
+    // This is okay, as IE doesn't support this stuff anyway.
+    if (window.addEventListener !== undefined) {
+      window.addEventListener("online", function() {
+        self.emit('online', null);
+      });
+      window.addEventListener("offline", function() {
+        self.emit('offline', null);
+      });
+    }
   };
 
   // Offline means definitely offline (no connection to router).
   // Inverse does NOT mean definitely online (only currently supported in Safari
   // and even there only means the device has a connection to the router).
   NetInfo.prototype.isOnLine = function() {
-    return window.navigator.onLine;
+    if (window.navigator.onLine === undefined) {
+      return true;
+    } else {
+      return window.navigator.onLine;
+    }
   };
 
   Pusher.Util.extend(NetInfo.prototype, Pusher.EventsDispatcher.prototype);
