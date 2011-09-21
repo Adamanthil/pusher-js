@@ -15,6 +15,7 @@
     var events = [];
 
     this.next = function() {
+      // console.log('next', events);
       return events.shift();
     };
 
@@ -26,6 +27,7 @@
           events.push({name: event_name});
         }
       }
+      // console.log('addEvent', events);
     });
   }
 
@@ -43,7 +45,7 @@
         numberOfCallbacks = callbacks.length;
 
     subject.bind(event_name, function(event_data) {
-      //console.log(event_data);
+      // console.log('observed', event_data);
       if (numberOfChanges < numberOfCallbacks) {
         callbacks[numberOfChanges++](event_data);
       }
@@ -969,7 +971,9 @@
         // Connect the socket to continue the tests.
         connection.connect();
       },
+    },
 
+    'NetInfo': {
       'User: unavailable, machine: waiting if connected and then internet dies': function(test) {
         Pusher.Transport = TestSocket;
         Pusher.NetInfo = TestNetInfo;
@@ -1019,8 +1023,8 @@
           function(e) {
             test.equal(e.newState, 'waiting', 'state should intially be "waiting"');
             test.equal(connection.state, 'unavailable', 'user state should be "unavailable"');
-          },
-          function(e) {
+            // This needs to be in the same block as you don't actually get any state_change
+            // event after unavailable.
             defer(connection.disconnect, connection);
           },
           function(e) {
@@ -1056,8 +1060,6 @@
 
         connection.connect();
       },
-
-
     },
 
     'Message Sending and Receiving': {
